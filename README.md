@@ -14,6 +14,9 @@ docker-compose down
 # Просмотр логов
 docker-compose logs -f
 
+# Загрузить данные меню вручную (если нужно)
+docker-compose exec web python manage.py load_menu
+
 # Создать суперпользователя
 docker-compose exec web python manage.py createsuperuser
 ```

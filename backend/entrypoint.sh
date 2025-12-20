@@ -12,6 +12,10 @@ echo "Applying migrations..."
 python manage.py makemigrations
 python manage.py migrate
 
+# Загружаем начальные данные меню
+echo "Loading menu items..."
+python manage.py load_menu
+
 # Создаем суперпользователя (если нужно)
 # python manage.py createsuperuser --noinput || true
 
