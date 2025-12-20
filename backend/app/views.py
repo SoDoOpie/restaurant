@@ -103,5 +103,14 @@ class CategoryGetView(APIView):
         serializer = CategorySerializer(category)
         return Response(serializer.data)
 
+class MenuItemsByCategoryView(APIView):
+    def get(self, request, category_id):
+        try:
+            category = Category.objects.get(pk=category_id)
+        except Category.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
+        menu_items = MenuItem.objects.filter(category=category)
+        serializer = MenuItemSerializer(menu_items, many=True)
+        return Response(serializer.data)
 
