@@ -1,0 +1,10 @@
+@import 'tailwindcss' source(none);
+@source '../**/*.{js,ts,jsx,tsx}';
+
+@import 'tw-animate-css';
+
+@theme {
+  --font-playfair: 'Playfair Display', serif;
+  --font-crimson: 'Crimson Text', serif;
+  --font-cinzel: 'Cinzel', serif;
+}
