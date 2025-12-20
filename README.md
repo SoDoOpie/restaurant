@@ -1,15 +1,12 @@
 # Restaurant API
 
-Django REST API для управления меню ресторана
+Django REST API для управления меню ресторана + React фронтенд
 
 ## Запуск с Docker
 
 ```bash
-# Перейти в backend
-cd backend
-
-# Запустить приложение
-docker-compose up -d
+# Запустить все сервисы (backend, frontend, database)
+docker-compose up --build
 
 # Остановить приложение
 docker-compose down
@@ -20,6 +17,13 @@ docker-compose logs -f
 # Создать суперпользователя
 docker-compose exec web python manage.py createsuperuser
 ```
+
+## Доступ
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000/api/
+- **Admin Panel**: http://localhost:8000/admin/
+- **PostgreSQL**: localhost:5433
 
 ## API Endpoints
 
