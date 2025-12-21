@@ -36,7 +36,6 @@ docker-compose exec web python manage.py createsuperuser
 - `GET /api/menu-items/<id>/` - Получить блюдо по ID
 - `PUT /api/menu-items/<id>/update/` - Обновить блюдо
 - `DELETE /api/menu-items/<id>/delete/` - Удалить блюдо
-
 ### Categories
 - `GET /api/categories/` - Получить все категории
 - `POST /api/categories/add/` - Создать категорию

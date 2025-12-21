@@ -11,6 +11,7 @@ from .views import (
     CategoryUpdateView,
     CategoryGetView,
     MenuItemsByCategoryView,
+    MenuItemsByAllCategoriesView,
 )
 
 
@@ -26,4 +27,5 @@ urlpatterns = [
     path("categories/<int:pk>/delete/", CategoryDeleteView.as_view(), name="category-delete"),
     path("categories/<int:pk>/update/", CategoryUpdateView.as_view(), name="category-update"),
     path("categories/<int:category_id>/menu-items/", MenuItemsByCategoryView.as_view(), name="menu-items-by-category"),
+    path("categories/menu-items/", MenuItemsByAllCategoriesView.as_view(), name="menu-items-by-all-categories"),
 ]

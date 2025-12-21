@@ -114,3 +114,13 @@ class MenuItemsByCategoryView(APIView):
         serializer = MenuItemSerializer(menu_items, many=True)
         return Response(serializer.data)
 
+class MenuItemsByAllCategoriesView(APIView):
+    def get(self, request):
+        categories = Category.objects.all()
+        data = {}
+        for category in categories:
+            menu_items = MenuItem.objects.filter(category=category)
+            serializer = MenuItemSerializer(menu_items, many=True)
+            data[category.name] = serializer.data
+        return Response(data)
+
