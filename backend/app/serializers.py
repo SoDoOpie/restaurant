@@ -4,7 +4,7 @@ from .models import MenuItem, Category
 class MenuItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = MenuItem
-        fields = ['id', 'name', 'description', 'price', 'category']
+        fields = ['id', 'name', 'description', 'price', 'category', 'image_url', 'is_active']
         read_only_fields = ['id']
     
     def validate_price(self, value):
