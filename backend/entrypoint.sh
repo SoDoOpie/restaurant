@@ -16,8 +16,9 @@ python manage.py migrate
 echo "Loading menu items..."
 python manage.py load_menu
 
-# Создаем суперпользователя (если нужно)
-# python manage.py createsuperuser --noinput || true
+# Создаем суперпользователя
+echo "Creating superuser..."
+python manage.py createsuperuser --noinput || true
 
 # Запускаем сервер
 exec "$@"

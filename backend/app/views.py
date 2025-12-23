@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import MenuItem, Category
 from .serializers import MenuItemSerializer, CategorySerializer
-
+from .authentication import APIKeyAuthentication
+from rest_framework.decorators import authentication_classes
 
 class MenuItemGetAllView(APIView):
     def get(self, request):
@@ -12,7 +13,7 @@ class MenuItemGetAllView(APIView):
         serializer = MenuItemSerializer(menu_items, many=True)
         return Response(serializer.data)
 
-
+@authentication_classes([APIKeyAuthentication])
 class MenuItemCreateView(APIView):
     def post(self, request):
         serializer = MenuItemSerializer(data=request.data)
@@ -22,6 +23,7 @@ class MenuItemCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@authentication_classes([APIKeyAuthentication])
 class MenuItemDeleteView(APIView):
     def delete(self, request, pk):
         try:
@@ -33,6 +35,7 @@ class MenuItemDeleteView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@authentication_classes([APIKeyAuthentication])
 class MenuItemUpdateView(APIView):
     def put(self, request, pk):
         try:
@@ -62,6 +65,7 @@ class CategoryGetAllView(APIView):
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
+@authentication_classes([APIKeyAuthentication])
 class CategoryCreateView(APIView):
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
@@ -70,6 +74,7 @@ class CategoryCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@authentication_classes([APIKeyAuthentication])
 class CategoryDeleteView(APIView):
     def delete(self, request, pk):
         try:
@@ -80,6 +85,7 @@ class CategoryDeleteView(APIView):
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+@authentication_classes([APIKeyAuthentication])
 class CategoryUpdateView(APIView):
     def put(self, request, pk):
         try:

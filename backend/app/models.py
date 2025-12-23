@@ -1,6 +1,27 @@
 from django.db import models
+import secrets
 
 # Create your models here.
+
+
+class APIKey(models.Model):
+    """Model for storing API keys for authentication."""
+    key = models.CharField(max_length=64, unique=True, db_index=True)
+    name = models.CharField(max_length=100, help_text="Name/description of this API key")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.key:
+            self.key = secrets.token_urlsafe(48)
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f"{self.name} - {self.key[:10]}..."
+    
+    class Meta:
+        verbose_name = "API Key"
+        verbose_name_plural = "API Keys"
 
 
 class Category(models.Model):
