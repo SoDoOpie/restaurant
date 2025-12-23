@@ -2,10 +2,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from .models import MenuItem, Category
 from .serializers import MenuItemSerializer, CategorySerializer
 from .authentication import APIKeyAuthentication
+from .permissions import HasValidAPIKey
 
 
 class MenuItemGetAllView(APIView):
@@ -22,7 +22,7 @@ class MenuItemGetAllView(APIView):
 class MenuItemCreateView(APIView):
     """Защищённый endpoint - требует API ключ"""
     authentication_classes = [APIKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasValidAPIKey]
     def post(self, request):
         serializer = MenuItemSerializer(data=request.data)
         if serializer.is_valid():
@@ -34,7 +34,7 @@ class MenuItemCreateView(APIView):
 class MenuItemDeleteView(APIView):
     """Защищённый endpoint - требует API ключ"""
     authentication_classes = [APIKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasValidAPIKey]
     
     def delete(self, request, pk):
         try:
@@ -49,7 +49,7 @@ class MenuItemDeleteView(APIView):
 class MenuItemUpdateView(APIView):
     """Защищённый endpoint - требует API ключ"""
     authentication_classes = [APIKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasValidAPIKey]
     
     def put(self, request, pk):
         try:
@@ -93,7 +93,7 @@ class CategoryGetAllView(APIView):
 class CategoryCreateView(APIView):
     """Защищённый endpoint - требует API ключ"""
     authentication_classes = [APIKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasValidAPIKey]
     
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
@@ -106,7 +106,7 @@ class CategoryCreateView(APIView):
 class CategoryDeleteView(APIView):
     """Защищённый endpoint - требует API ключ"""
     authentication_classes = [APIKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasValidAPIKey]
     
     def delete(self, request, pk):
         try:
@@ -121,7 +121,7 @@ class CategoryDeleteView(APIView):
 class CategoryUpdateView(APIView):
     """Защищённый endpoint - требует API ключ"""
     authentication_classes = [APIKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasValidAPIKey]
     
     def put(self, request, pk):
         try:
@@ -184,7 +184,7 @@ class MenuItemsByAllCategoriesView(APIView):
 class CheckAPIKeyView(APIView):
     """Endpoint для проверки валидности API ключа"""
     authentication_classes = [APIKeyAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [HasValidAPIKey]
     
     def get(self, request):
         return Response({"detail": "Valid API key."}, status=status.HTTP_200_OK)
