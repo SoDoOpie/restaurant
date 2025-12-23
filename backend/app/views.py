@@ -2,19 +2,27 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import MenuItem, Category
 from .serializers import MenuItemSerializer, CategorySerializer
 from .authentication import APIKeyAuthentication
-from rest_framework.decorators import authentication_classes
+
 
 class MenuItemGetAllView(APIView):
+    """Публичный endpoint - не требует аутентификации"""
+    authentication_classes = []
+    permission_classes = []
+    
     def get(self, request):
         menu_items = MenuItem.objects.all()
         serializer = MenuItemSerializer(menu_items, many=True)
         return Response(serializer.data)
 
-@authentication_classes([APIKeyAuthentication])
+
 class MenuItemCreateView(APIView):
+    """Защищённый endpoint - требует API ключ"""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request):
         serializer = MenuItemSerializer(data=request.data)
         if serializer.is_valid():
@@ -23,8 +31,11 @@ class MenuItemCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@authentication_classes([APIKeyAuthentication])
 class MenuItemDeleteView(APIView):
+    """Защищённый endpoint - требует API ключ"""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def delete(self, request, pk):
         try:
             menu_item = MenuItem.objects.get(pk=pk)
@@ -35,8 +46,11 @@ class MenuItemDeleteView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@authentication_classes([APIKeyAuthentication])
 class MenuItemUpdateView(APIView):
+    """Защищённый endpoint - требует API ключ"""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def put(self, request, pk):
         try:
             menu_item = MenuItem.objects.get(pk=pk)
@@ -49,7 +63,12 @@ class MenuItemUpdateView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class MenuItemGetView(APIView):
+    """Публичный endpoint - не требует аутентификации"""
+    authentication_classes = []
+    permission_classes = []
+    
     def get(self, request, pk):
         try:
             menu_item = MenuItem.objects.get(pk=pk)
@@ -59,14 +78,23 @@ class MenuItemGetView(APIView):
         serializer = MenuItemSerializer(menu_item)
         return Response(serializer.data)
 
+
 class CategoryGetAllView(APIView):
+    """Публичный endpoint - не требует аутентификации"""
+    authentication_classes = []
+    permission_classes = []
+    
     def get(self, request):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
         return Response(serializer.data)
 
-@authentication_classes([APIKeyAuthentication])
+
 class CategoryCreateView(APIView):
+    """Защищённый endpoint - требует API ключ"""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def post(self, request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
@@ -74,8 +102,12 @@ class CategoryCreateView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@authentication_classes([APIKeyAuthentication])
+
 class CategoryDeleteView(APIView):
+    """Защищённый endpoint - требует API ключ"""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def delete(self, request, pk):
         try:
             category = Category.objects.get(pk=pk)
@@ -85,8 +117,12 @@ class CategoryDeleteView(APIView):
         category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@authentication_classes([APIKeyAuthentication])
+
 class CategoryUpdateView(APIView):
+    """Защищённый endpoint - требует API ключ"""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    
     def put(self, request, pk):
         try:
             category = Category.objects.get(pk=pk)
@@ -99,7 +135,12 @@ class CategoryUpdateView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CategoryGetView(APIView):
+    """Публичный endpoint - не требует аутентификации"""
+    authentication_classes = []
+    permission_classes = []
+    
     def get(self, request, pk):
         try:
             category = Category.objects.get(pk=pk)
@@ -109,7 +150,12 @@ class CategoryGetView(APIView):
         serializer = CategorySerializer(category)
         return Response(serializer.data)
 
+
 class MenuItemsByCategoryView(APIView):
+    """Публичный endpoint - не требует аутентификации"""
+    authentication_classes = []
+    permission_classes = []
+    
     def get(self, request, category_id):
         try:
             category = Category.objects.get(pk=category_id)
@@ -120,7 +166,12 @@ class MenuItemsByCategoryView(APIView):
         serializer = MenuItemSerializer(menu_items, many=True)
         return Response(serializer.data)
 
+
 class MenuItemsByAllCategoriesView(APIView):
+    """Публичный endpoint - не требует аутентификации"""
+    authentication_classes = []
+    permission_classes = []
+    
     def get(self, request):
         categories = Category.objects.all()
         data = {}

@@ -135,12 +135,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 # REST Framework settings
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'app.authentication.APIKeyAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+    # Не устанавливаем глобальную аутентификацию
+    # Аутентификация применяется выборочно к нужным views
 }
 
 # Default primary key field type
