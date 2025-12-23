@@ -181,3 +181,10 @@ class MenuItemsByAllCategoriesView(APIView):
             data[category.name] = serializer.data
         return Response(data)
 
+class CheckAPIKeyView(APIView):
+    """Endpoint для проверки валидности API ключа"""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        return Response({"detail": "Valid API key."}, status=status.HTTP_200_OK)

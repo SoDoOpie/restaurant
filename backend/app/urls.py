@@ -12,6 +12,7 @@ from .views import (
     CategoryGetView,
     MenuItemsByCategoryView,
     MenuItemsByAllCategoriesView,
+    CheckAPIKeyView,
 )
 
 
@@ -28,4 +29,5 @@ urlpatterns = [
     path("categories/<int:pk>/update/", CategoryUpdateView.as_view(), name="category-update"),
     path("categories/<int:category_id>/menu-items/", MenuItemsByCategoryView.as_view(), name="menu-items-by-category"),
     path("categories/menu-items/", MenuItemsByAllCategoriesView.as_view(), name="menu-items-by-all-categories"),
+    path("check-api-key/", CheckAPIKeyView.as_view(), name="check-api-key"),
 ]
