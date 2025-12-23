@@ -57,6 +57,6 @@ curl -X POST http://localhost:8000/api/menu-items/add/ \
 - `PUT /api/categories/<id>/update/` - Обновить категорию 🔒
 - `DELETE /api/categories/<id>/delete/` - Удалить категорию 🔒
 - `GET /api/categories/menu-items/` - Получить все меню с группировкой по категориям
-/api/check-api-key/  - проверить ключ
+GET /api/check-api-key/  - проверить ключ
 
 🔒 - требует API ключ
