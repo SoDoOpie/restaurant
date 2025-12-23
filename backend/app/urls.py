@@ -13,6 +13,7 @@ from .views import (
     MenuItemsByCategoryView,
     MenuItemsByAllCategoriesView,
     CheckAPIKeyView,
+    GetNotActiveElementsView,
 )
 
 
@@ -30,4 +31,5 @@ urlpatterns = [
     path("categories/<int:category_id>/menu-items/", MenuItemsByCategoryView.as_view(), name="menu-items-by-category"),
     path("categories/menu-items/", MenuItemsByAllCategoriesView.as_view(), name="menu-items-by-all-categories"),
     path("check-api-key/", CheckAPIKeyView.as_view(), name="check-api-key"),
+    path("not-active-elements/", GetNotActiveElementsView.as_view(), name="get-not-active-elements"),
 ]

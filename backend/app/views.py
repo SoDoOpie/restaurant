@@ -188,3 +188,20 @@ class CheckAPIKeyView(APIView):
     
     def get(self, request):
         return Response({"detail": "Valid API key."}, status=status.HTTP_200_OK)
+
+class GetNotActiveElementsView(APIView):
+    """Защищённый endpoint - требует API ключ"""
+    authentication_classes = [APIKeyAuthentication]
+    permission_classes = [HasValidAPIKey]
+    
+    def get(self, request):
+        inactive_menu_items = MenuItem.objects.filter(is_active=False)
+        inactive_categories = Category.objects.filter(is_active=False)
+        
+        menu_item_serializer = MenuItemSerializer(inactive_menu_items, many=True)
+        category_serializer = CategorySerializer(inactive_categories, many=True)
+        
+        return Response({
+            "inactive_menu_items": menu_item_serializer.data,
+            "inactive_categories": category_serializer.data
+        })
