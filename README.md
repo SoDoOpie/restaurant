@@ -13,38 +13,50 @@ docker-compose down
 
 # Просмотр логов
 docker-compose logs -f
-
-# Загрузить данные меню вручную (если нужно)
-docker-compose exec web python manage.py load_menu
-
-# Создать суперпользователя
-docker-compose exec web python manage.py createsuperuser
 ```
 
 ## Доступ
 
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000/api/
-- **Admin Panel**: http://localhost:8000/admin/
+- **Admin Panel**: http://localhost:8000/admin/ (логин: `admin`, пароль: `admin123`)
 - **PostgreSQL**: localhost:5433
+
+## API Аутентификация
+
+Операции изменения данных (POST, PUT, DELETE) требуют API ключ. Операции чтения (GET) публичные.
+
+### Получение API ключа:
+1. Войдите в админ панель: http://localhost:8000/admin/
+2. Перейдите в раздел "API Keys"
+3. Создайте новый API ключ
+4. Скопируйте сгенерированный ключ
+
+### Использование API ключа:
+Добавьте заголовок `X-API-Key` в запросы:
+```bash
+curl -X POST http://localhost:8000/api/menu-items/add/ \
+  -H "X-API-Key: ваш-api-ключ" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Pizza", "price": 12.99}'
+```
 
 ## API Endpoints
 
 ### Menu Items
 - `GET /api/menu-items/` - Получить все блюда
-- `POST /api/menu-items/add/` - Создать блюдо
+- `POST /api/menu-items/add/` - Создать блюдо 🔒
 - `GET /api/menu-items/<id>/` - Получить блюдо по ID
-- `PUT /api/menu-items/<id>/update/` - Обновить блюдо
-- `DELETE /api/menu-items/<id>/delete/` - Удалить блюдо
+- `PUT /api/menu-items/<id>/update/` - Обновить блюдо 🔒
+- `DELETE /api/menu-items/<id>/delete/` - Удалить блюдо 🔒
+
 ### Categories
 - `GET /api/categories/` - Получить все категории
-- `POST /api/categories/add/` - Создать категорию
+- `POST /api/categories/add/` - Создать категорию 🔒
 - `GET /api/categories/<id>/` - Получить категорию по ID
-- `PUT /api/categories/<id>/update/` - Обновить категорию
-- `DELETE /api/categories/<id>/delete/` - Удалить категорию
+- `PUT /api/categories/<id>/update/` - Обновить категорию 🔒
+- `DELETE /api/categories/<id>/delete/` - Удалить категорию 🔒
+- `GET /api/categories/menu-items/` - Получить все меню с группировкой по категориям
+/api/check-api-key/  - проверить ключ
 
-## Доступ
-
-- API: http://localhost:8000/api/
-- Admin: http://localhost:8000/admin/
-- PostgreSQL: localhost:5432
+🔒 - требует API ключ
