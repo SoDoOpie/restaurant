@@ -52,12 +52,26 @@ class MenuItemUpdateView(APIView):
     permission_classes = [HasValidAPIKey]
     
     def put(self, request, pk):
+        """Полное обновление - требует все поля"""
         try:
             menu_item = MenuItem.objects.get(pk=pk)
         except MenuItem.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = MenuItemSerializer(menu_item, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk):
+        """Частичное обновление - можно передать только изменяемые поля"""
+        try:
+            menu_item = MenuItem.objects.get(pk=pk)
+        except MenuItem.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = MenuItemSerializer(menu_item, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -124,12 +138,26 @@ class CategoryUpdateView(APIView):
     permission_classes = [HasValidAPIKey]
     
     def put(self, request, pk):
+        """Полное обновление - требует все поля"""
         try:
             category = Category.objects.get(pk=pk)
         except Category.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         serializer = CategorySerializer(category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def patch(self, request, pk):
+        """Частичное обновление - можно передать только изменяемые поля"""
+        try:
+            category = Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CategorySerializer(category, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
