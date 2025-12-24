@@ -2,16 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "../../api";
 import { MenuItemProps } from "../MenuItem";
 
-export interface MenuResponse {
-  [category: string]: MenuItemProps[];
-}
-
-export const useMenu = () => {
+export const useMenu = (category_id: number | undefined) => {
   return useQuery({
-    queryKey: ["menu"],
-    queryFn: async (): Promise<MenuResponse> => {
-      const res = await fetch(`${api}/categories/menu-items`);
+    queryKey: ["menu", category_id],
+    queryFn: async (): Promise<MenuItemProps[]> => {
+      const res = await fetch(`${api}/categories/${category_id}/menu-items/`);
       return res.json();
     },
+    enabled: !!category_id,
   });
 };

@@ -54,11 +54,15 @@ export function Admin() {
         className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md border border-gray-700"
         onSubmit={checkAndSaveKey}
       >
-        <h2 className="text-lg font-semibold text-gray-100 mb-4">API Key Management</h2>
-        
+        <h2 className="text-lg font-semibold text-gray-100 mb-4">
+          API Key Management
+        </h2>
+
         {cookies["api-key"] && (
           <div className="mb-4 p-3 bg-green-900/30 border border-green-700 rounded-md">
-            <p className="text-green-400 text-sm">Current key: {cookies["api-key"].substring(0, 20)}...</p>
+            <p className="text-green-400 text-sm">
+              Current key: {cookies["api-key"].substring(0, 10)}...
+            </p>
           </div>
         )}
 
@@ -70,10 +74,10 @@ export function Admin() {
           onChange={(e) => setKey(e.target.value)}
           placeholder="Enter your API key"
         />
-        
+
         {error && <p className="text-red-400 mt-2 text-sm">{error}</p>}
         {success && <p className="text-green-400 mt-2 text-sm">{success}</p>}
-        
+
         <div className="flex items-center justify-between mt-4 gap-2">
           <button
             type="button"

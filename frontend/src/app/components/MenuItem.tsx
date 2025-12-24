@@ -1,8 +1,11 @@
 export interface MenuItemProps {
+  id: number;
   name: string;
   description: string;
   price: string;
   image_url: string;
+  is_active: boolean;
+  is_admin_mode?: boolean;
 }
 
 export function MenuItem({
@@ -10,14 +13,48 @@ export function MenuItem({
   description,
   price,
   image_url,
+  is_active = true,
+  is_admin_mode = false, // Default to false
 }: MenuItemProps) {
   return (
-    <div className="group cursor-pointer">
-      <div className="aspect-[4/3] overflow-hidden rounded-lg mb-4 bg-neutral-800 border border-amber-500/20">
+    <div
+      className={`group cursor-pointer transition-opacity duration-300 ${
+        !is_active ? "opacity-60" : ""
+      }`}
+    >
+      <div className="aspect-[4/3] overflow-hidden rounded-lg mb-4 bg-neutral-800 border border-amber-500/20 relative">
+        {is_admin_mode && is_active === false && (
+          <button
+            className="
+              absolute top-2 right-2 z-20
+              w-9 h-9 rounded-full
+              bg-black/60 backdrop-blur
+              flex items-center justify-center
+              text-amber-400
+              hover:bg-black/80 hover:scale-110
+              transition
+              shadow-lg
+              filter-none
+            "
+            aria-label="Add to featured"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 448 512"
+              className="w-6 h-6 text-amber-500 fill-current"
+            >
+              <path d="M256 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 160-160 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l160 0 0 160c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-160z" />
+            </svg>
+          </button>
+        )}
         <img
           src={image_url}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className={`
+            w-full h-full object-cover
+            transition-transform duration-500
+            ${!is_active ? "grayscale" : "group-hover:scale-110"}
+          `}
         />
       </div>
       <div className="flex justify-between items-start gap-4">
@@ -27,7 +64,13 @@ export function MenuItem({
         </div>
         <div className="shrink-0 text-right">
           <div className="relative">
-            <span className="text-3xl font-playfair text-amber-500 italic group-hover:text-amber-400 transition-colors">
+            <span
+              className={`text-3xl font-playfair italic transition-colors ${
+                !is_active
+                  ? "text-neutral-500"
+                  : "text-amber-500 group-hover:text-amber-400"
+              }`}
+            >
               {price}
             </span>
             <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>

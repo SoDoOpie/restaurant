@@ -1,11 +1,38 @@
+import { useState } from "react";
 import { Logo } from "./components/Logo";
 import { Menu } from "./components/Menu";
 import { Ornament, CornerOrnament } from "./components/Ornament";
-import { useMenu } from "./components/queries/useMenu";
+import { useMenuWithCategories } from "./components/queries/useMenuWithCategories";
+import { useCookies } from "react-cookie";
+import { api } from "./api";
+import { Link } from "react-router";
 
 export default function App() {
-  const { data: menu, isLoading: menuLoading } = useMenu();
-  console.log("categories-menu", menu);
+  const { data: menu, isLoading: menuLoading } = useMenuWithCategories();
+  const [cookies, , removeCookie] = useCookies(["api-key"]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkKey = async () => {
+    try {
+      const response = await fetch(`${api}/check-api-key/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": cookies["api-key"],
+        },
+      });
+
+      if (response.ok) {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+        removeCookie("api-key", { path: "/" });
+      }
+    } catch (err) {
+      console.error("Error while checking API key");
+    }
+  };
+  checkKey();
 
   return (
     <div className="min-h-screen bg-neutral-950">
@@ -34,9 +61,18 @@ export default function App() {
                 Contact
               </a>
             </div>
-            <button className="px-6 py-2.5 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors font-cinzel text-sm tracking-wide">
-              Reserve
-            </button>
+            <div className="flex gap-4">
+              <button className="px-6 py-2.5 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors font-cinzel text-sm tracking-wide">
+                Reserve
+              </button>
+              {isAdmin && (
+                <Link to="/admin/edit-menu">
+                  <button className="px-6 py-2.5 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors font-cinzel text-sm tracking-wide">
+                    Admin Panel
+                  </button>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </nav>
@@ -165,4 +201,11 @@ export default function App() {
       </section>
     </div>
   );
+}
+function setCookie(
+  arg0: string,
+  key: any,
+  arg2: { path: string; maxAge: number }
+) {
+  throw new Error("Function not implemented.");
 }

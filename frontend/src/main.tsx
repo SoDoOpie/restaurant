@@ -5,6 +5,7 @@ import { CookiesProvider } from "react-cookie";
 import App from "./app/App.tsx";
 import "./styles/index.css";
 import { Admin } from "./app/Admin.tsx";
+import { EditMenu } from "./app/Pages/EditMenu/EditMenu.tsx";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/edit-menu" element={<EditMenu />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
