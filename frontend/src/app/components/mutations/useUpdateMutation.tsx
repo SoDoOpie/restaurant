@@ -9,7 +9,7 @@ export interface MenuItemUpdatePayload {
   price?: number;
   prev_category_id: number;
   category_id?: number;
-  image?: string;
+  image_url?: string;
   is_active?: boolean;
 }
 
@@ -170,12 +170,13 @@ export const useDeleteCategoryMutation = () => {
   });
 };
 
-interface MenuItemAddPayload {
+export interface MenuItemAddPayload {
   name: string;
   description: string;
   price: number;
-  category: string;
+  category: number;
   image_url: string;
+  is_active: boolean;
 }
 
 export const useAddMenuItemMutation = () => {

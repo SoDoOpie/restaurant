@@ -317,6 +317,7 @@ export function EditMenu() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {menuItems.map((item) => (
                 <div
+                  key={item.id}
                   onClick={() => {
                     setSelectedMenuItem(item);
                     setIsModalOpen(true);
@@ -352,14 +353,14 @@ export function EditMenu() {
         <EditMenuItemForm
           menuItem={selectedMenuItem || undefined}
           categories={categories || []}
-          isNew={isAddingMenuItem}
           onClose={() => setIsModalOpen(false)}
-          onSave={(data) => {
-            if (isAddingMenuItem) {
-              addMenuItemMutation.mutate(data);
+          onSave={(payload) => {
+            if (payload.type === "add") {
+              addMenuItemMutation.mutate(payload.data);
             } else {
-              updateMenuMutation.mutate(data);
+              updateMenuMutation.mutate(payload.data);
             }
+
             setIsModalOpen(false);
             setIsAddingMenuItem(false);
           }}

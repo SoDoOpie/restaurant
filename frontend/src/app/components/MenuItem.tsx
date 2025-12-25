@@ -74,7 +74,7 @@ export function MenuItem({
                   : "text-amber-500 group-hover:text-amber-400"
               }`}
             >
-              {price}
+              {price.toString() + "€"}
             </span>
             <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
           </div>

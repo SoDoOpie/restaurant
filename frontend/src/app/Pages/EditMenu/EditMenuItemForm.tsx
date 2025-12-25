@@ -1,28 +1,28 @@
 import { useState } from "react";
+import {
+  MenuItemAddPayload,
+  MenuItemUpdatePayload,
+} from "../../components/mutations/useUpdateMutation";
+
+interface MenuItemProps {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: number;
+  image_url: string;
+  is_active: boolean;
+}
+
+type OnSavePayload =
+  | { type: "edit"; data: MenuItemUpdatePayload }
+  | { type: "add"; data: MenuItemAddPayload };
 
 interface EditMenuItemFormProps {
-  menuItem?: {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    image_url: string;
-    category: number;
-    is_active: boolean;
-  };
+  menuItem?: MenuItemProps;
   categories: { id: number; name: string }[];
   onClose: () => void;
-  onSave: (data: {
-    id: number;
-    name: string;
-    description: string;
-    price: number;
-    category: string;
-    prev_category_id: number;
-    image_url: string;
-    is_active: boolean;
-  }) => void;
-  isNew?: boolean;
+  onSave: (payload: OnSavePayload) => void;
 }
 
 export function EditMenuItemForm({
@@ -31,60 +31,92 @@ export function EditMenuItemForm({
   onClose,
   onSave,
 }: EditMenuItemFormProps) {
-  const [name, setName] = useState(menuItem?.name || "");
-  const [description, setDescription] = useState(menuItem?.description || "");
-  const [price, setPrice] = useState(menuItem?.price.toString() || "");
-  const [categoryId, setCategoryId] = useState(menuItem?.category || "");
-  const [imageFile, setImageFile] = useState(menuItem?.image_url || "");
-  const [isActive, setIsActive] = useState<boolean>(
-    menuItem?.is_active || true
-  );
+  const [form, setForm] = useState({
+    name: menuItem?.name ?? "",
+    description: menuItem?.description ?? "",
+    price: menuItem?.price?.toString() ?? "",
+    categoryId: menuItem?.category ?? categories[0]?.id ?? 0,
+    imageUrl: menuItem?.image_url ?? "",
+    isActive: menuItem?.is_active ?? true,
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value, type } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const updatedItem: any = {
-      name,
-      description,
-      price: parseFloat(price),
-      prev_category_id: menuItem?.category,
-      category_id: categoryId,
-      is_active: isActive,
-    };
-
-    if (imageFile) {
-      // Если нужен API для загрузки файла, можно конвертировать в base64 или FormData
-      //updatedItem.image = URL.createObjectURL(imageFile); // пример для локального отображения
+    if (menuItem) {
+      onSave({
+        type: "edit",
+        data: {
+          ...menuItem,
+          name: form.name,
+          description: form.description,
+          price: Number(form.price),
+          prev_category_id: menuItem.category,
+          category_id: Number(form.categoryId),
+          image_url: form.imageUrl,
+          is_active: form.isActive,
+        },
+      });
+    } else {
+      onSave({
+        type: "add",
+        data: {
+          name: form.name,
+          description: form.description,
+          price: Number(form.price),
+          category: Number(form.categoryId),
+          image_url: form.imageUrl,
+          is_active: form.isActive,
+        },
+      });
     }
-
-    onSave(updatedItem);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        name="name"
+        value={form.name}
+        onChange={handleChange}
         className="w-full p-2 rounded bg-gray-700 text-gray-100"
         placeholder="Name"
       />
+
       <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        name="description"
+        value={form.description}
+        onChange={handleChange}
         className="w-full p-2 rounded bg-gray-700 text-gray-100"
         placeholder="Description"
       />
+
       <input
+        name="price"
         type="number"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
+        value={form.price}
+        onChange={handleChange}
         className="w-full p-2 rounded bg-gray-700 text-gray-100"
         placeholder="Price"
       />
+
       <select
-        value={categoryId}
-        onChange={(e) => setCategoryId(Number(e.target.value))}
+        name="categoryId"
+        value={form.categoryId}
+        onChange={handleChange}
         className="w-full p-2 rounded bg-gray-700 text-gray-100"
       >
         {categories.map((cat) => (
@@ -93,20 +125,25 @@ export function EditMenuItemForm({
           </option>
         ))}
       </select>
+
       <input
-        type="text"
-        value={imageFile}
+        name="imageUrl"
+        value={form.imageUrl}
+        onChange={handleChange}
         className="w-full p-2 rounded bg-gray-700 text-gray-100"
-        onChange={(e) => setImageFile(e.target.value)}
+        placeholder="Image URL"
       />
+
       <label className="flex items-center gap-2">
         <input
+          name="isActive"
           type="checkbox"
-          checked={isActive}
-          onChange={(e) => setIsActive(e.target.checked)}
+          checked={form.isActive}
+          onChange={handleChange}
         />
         Active
       </label>
+
       <div className="flex justify-end gap-2">
         <button
           type="button"
