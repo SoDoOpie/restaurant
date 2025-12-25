@@ -1,8 +1,13 @@
-export const AddCategory = () => {
+interface AddCategoryProps {
+  onClick?: () => void;
+}
+
+export const AddCategory = ({ onClick }: AddCategoryProps) => {
   return (
     <button
       onClick={() => {
         console.log("Add new category");
+        onClick?.();
         // Add your logic for adding a new category here
       }}
       className="w-full text-left p-2 rounded-md hover:bg-green-500 transition-colors bg-green-800 flex items-center gap-2"

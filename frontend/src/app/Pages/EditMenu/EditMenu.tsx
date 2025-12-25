@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, ChangeEvent } from "react";
+import { useRef, useState, useEffect, ChangeEvent, use } from "react";
 import { useCookies } from "react-cookie";
 import { api } from "../../api";
 import { Navigate } from "react-router";
@@ -10,6 +10,14 @@ import { DeleteCategory } from "./DeleteCategory";
 import { AddCategory } from "./AddCategory";
 import "./EditMenu.css";
 import Modal from "react-modal";
+import {
+  useAddCategoryMutation,
+  useAddMenuItemMutation,
+  useDeleteCategoryMutation,
+  useUpdateCategoriesMutation,
+  useUpdateMenuMutation,
+} from "../../components/mutations/useUpdateMutation";
+import { EditMenuItemForm } from "./EditMenuItemForm";
 
 Modal.setAppElement("#root");
 
@@ -17,7 +25,18 @@ export function EditMenu() {
   const [cookies, , removeCookie] = useCookies(["api-key"]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [isAddingMenuItem, setIsAddingMenuItem] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+
   const formRef = useRef<HTMLFormElement>(null);
+  const addCategoryRef = useRef<HTMLFormElement>(null);
+
+  const updateMenuMutation = useUpdateMenuMutation();
+  const updateCategoriesMutation = useUpdateCategoriesMutation();
+  const addCategoryMutation = useAddCategoryMutation();
+  const deleteCategoryMutation = useDeleteCategoryMutation();
+  const addMenuItemMutation = useAddMenuItemMutation();
 
   const [editingCategoryId, setEditingCategoryId] = useState<number | null>(
     null
@@ -27,6 +46,11 @@ export function EditMenu() {
   const [selectedMenuItem, setSelectedMenuItem] = useState<{
     id: number;
     name: string;
+    description: string;
+    price: number;
+    category: number;
+    image_url: string;
+    is_active: boolean;
   } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,14 +67,31 @@ export function EditMenu() {
     setEditedCategoryName(e.target.value);
   };
 
-  const handleSaveClick = () => {
+  const handleSaveClick = (e: React.FormEvent<HTMLFormElement>) => {
     // Add logic to save the edited category name (e.g., API call)
-    console.log("Save edited category:", editingCategoryId, editedCategoryName);
+    e.preventDefault();
+    updateCategoriesMutation.mutate({
+      id: editingCategoryId!,
+      name: editedCategoryName,
+    });
+
     setEditingCategoryId(null);
   };
 
   const handleCancelClick = () => {
     setEditingCategoryId(null);
+  };
+
+  const handleSetActive = (
+    item_id: number,
+    is_active: boolean,
+    category_id: number
+  ) => {
+    updateMenuMutation.mutate({
+      id: item_id,
+      prev_category_id: category_id,
+      is_active: !is_active,
+    });
   };
 
   // Check if the API key is valid
@@ -109,6 +150,27 @@ export function EditMenu() {
     };
   }, [editingCategoryId]);
 
+  // Close adding category form when clicking outside
+  useEffect(() => {
+    if (!isAddingCategory) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        addCategoryRef.current &&
+        !addCategoryRef.current.contains(event.target as Node)
+      ) {
+        setIsAddingCategory(false);
+        setNewCategoryName("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isAddingCategory]);
+
   if (isLoading) {
     return <p>Loading...</p>;
   }
@@ -148,7 +210,17 @@ export function EditMenu() {
                     </button>
 
                     {/* Delete button */}
-                    <button className="p-1 rounded-md hover:bg-gray-600 transition-colors ">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        try {
+                          deleteCategoryMutation.mutate(category.id);
+                        } catch (error) {
+                          console.error(error);
+                        }
+                      }}
+                      className="p-1 rounded-md hover:bg-gray-600 transition-colors "
+                    >
                       <DeleteCategory />
                     </button>
 
@@ -168,7 +240,7 @@ export function EditMenu() {
                   <form
                     key={category.id}
                     ref={formRef}
-                    action={() => {}}
+                    onSubmit={handleSaveClick}
                     className="flex items-center gap-2"
                   >
                     <input
@@ -183,7 +255,41 @@ export function EditMenu() {
                   </form>
                 )
               )}
-              <AddCategory />
+              {isAddingCategory && (
+                <form
+                  ref={addCategoryRef}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    updateCategoriesMutation.mutate({
+                      name: newCategoryName,
+                    });
+                    addCategoryMutation.mutate(newCategoryName);
+                    setIsAddingCategory(false);
+                    setNewCategoryName("");
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <input
+                    autoFocus
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="New category name"
+                    className="w-full flex-1 p-2 h-9 rounded-md bg-gray-700 text-gray-100 border border-gray-600"
+                  />
+
+                  <button
+                    type="submit"
+                    className="px-3 py-1 bg-green-600 rounded-md"
+                  >
+                    save
+                  </button>
+                </form>
+              )}
+
+              {isAddingCategory === false && (
+                <AddCategory onClick={() => setIsAddingCategory(true)} />
+              )}
             </div>
           ) : (
             <div className="text-gray-400">No categories</div>
@@ -192,7 +298,19 @@ export function EditMenu() {
 
         {/* Menu Items Section */}
         <div className="flex-1 bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
-          <h2 className="text-lg font-semibold mb-4">Menu Items</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Menu Items</h2>
+            <button
+              onClick={() => {
+                setSelectedMenuItem(null); // для добавления новый item
+                setIsAddingMenuItem(true);
+                setIsModalOpen(true);
+              }}
+              className="px-3 py-1 bg-green-600 rounded-md text-white hover:bg-green-700 transition"
+            >
+              Add Menu Item
+            </button>
+          </div>
           {menuItemsLoading ? (
             <div className="text-gray-400">Loading...</div>
           ) : menuItems ? (
@@ -205,7 +323,14 @@ export function EditMenu() {
                   }}
                   className="w-full text-left p-2 rounded-md hover:bg-gray-700 transition-colors cursor-pointer"
                 >
-                  <MenuItem key={item.id} {...item} is_admin_mode />
+                  <MenuItem
+                    key={item.id}
+                    {...item}
+                    is_admin_mode
+                    onClickActive={() =>
+                      handleSetActive(item.id, item.is_active, item.category)
+                    }
+                  />
                 </div>
               ))}
             </div>
@@ -224,23 +349,21 @@ export function EditMenu() {
         className="bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 max-w-md mx-auto outline-none"
         overlayClassName="fixed inset-0 flex items-center justify-center"
       >
-        {selectedMenuItem && (
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">{selectedMenuItem.name}</h2>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-200 transition"
-              >
-                ✕
-              </button>
-            </div>
-
-            <p className="text-gray-300">
-              Additional details or actions for {selectedMenuItem.name} go here.
-            </p>
-          </div>
-        )}
+        <EditMenuItemForm
+          menuItem={selectedMenuItem || undefined}
+          categories={categories || []}
+          isNew={isAddingMenuItem}
+          onClose={() => setIsModalOpen(false)}
+          onSave={(data) => {
+            if (isAddingMenuItem) {
+              addMenuItemMutation.mutate(data);
+            } else {
+              updateMenuMutation.mutate(data);
+            }
+            setIsModalOpen(false);
+            setIsAddingMenuItem(false);
+          }}
+        />
       </Modal>
     </div>
   );

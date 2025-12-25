@@ -1,9 +1,13 @@
+import { SetActiveSVG } from "../Pages/EditMenu/SetActiveSVG";
+
 export interface MenuItemProps {
   id: number;
   name: string;
   description: string;
-  price: string;
+  price: number;
+  category: number;
   image_url: string;
+  onClickActive?: () => void;
   is_active: boolean;
   is_admin_mode?: boolean;
 }
@@ -14,6 +18,7 @@ export function MenuItem({
   price,
   image_url,
   is_active = true,
+  onClickActive,
   is_admin_mode = false, // Default to false
 }: MenuItemProps) {
   return (
@@ -23,7 +28,7 @@ export function MenuItem({
       }`}
     >
       <div className="aspect-[4/3] overflow-hidden rounded-lg mb-4 bg-neutral-800 border border-amber-500/20 relative">
-        {is_admin_mode && is_active === false && (
+        {is_admin_mode && (
           <button
             className="
               absolute top-2 right-2 z-20
@@ -36,15 +41,13 @@ export function MenuItem({
               shadow-lg
               filter-none
             "
-            aria-label="Add to featured"
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log("onClickActive");
+              onClickActive?.();
+            }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 448 512"
-              className="w-6 h-6 text-amber-500 fill-current"
-            >
-              <path d="M256 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 160-160 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l160 0 0 160c0 17.7 14.3 32 32 32s32-14.3 32-32l0-160 160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0 0-160z" />
-            </svg>
+            <SetActiveSVG is_active={is_active} />
           </button>
         )}
         <img
